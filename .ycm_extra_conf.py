@@ -36,7 +36,7 @@ DIR_OF_THIS_SCRIPT = os.path.abspath(os.path.dirname(__file__))
 DIR_OF_THIRD_PARTY = os.path.join(DIR_OF_THIS_SCRIPT, 'third_party')
 SOURCE_EXTENSIONS = ['.cpp', '.cxx', '.cc', '.c', '.m', '.mm']
 
-flags = ['-x', 'c', '-W', '-Wall', '-Werror',
+flags = ['-x', 'c++', '-W', '-Wall', '-Werror',
          '-Wno-unused-function',
          '-Wno-error=unused-function',
          '-Wno-error=unused-parameter',
