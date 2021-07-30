@@ -1,0 +1,24 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+*.o
+*.c.swap
+*.h.swap
+*.c.swp
+*.h.swp
+*.c.swo
+*.h.swo
+*.swp
+tags
+diff
+unit_app
+target/
+cscope.files
+cscope.out
+depend
