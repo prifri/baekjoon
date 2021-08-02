@@ -28,29 +28,32 @@ int main(void)
 
 	int x = 0;
 	int y = 0;
+	int remain = x_len * y_len;
 
 	if (c1 <= x && x <= c2 && r1 <= y && y <= r2)
 	{
 		map[y - r1][x - c1] = 1;
+		remain--;
 	}
 
 	x++;
 	if (c1 <= x && x <= c2 && r1 <= y && y <= r2)
 	{
 		map[y - r1][x - c1] = 2;
+		remain--;
 	}
 
 	y--;
 	if (c1 <= x && x <= c2 && r1 <= y && y <= r2)
 	{
 		map[y - r1][x - c1] = 3;
+		remain--;
 	}
 
 	int num = 3;
 	int add = 1;
 
-	int remain = x_len * y_len;
-	while (1)
+	while (remain > 0)
 	{
 		add++;
 		for (int i = 0; i < add; i++)
@@ -97,44 +100,7 @@ int main(void)
 				remain--;
 			}
 		}
-	
-			if (remain == 0)
-			{
-				int max = 0;
-				int check = map[r1][c1];
-				if (max < check)
-					max = check;
 
-				check = map[r1][c2];
-				if (max < check)
-					max = check;
-
-				check = map[r2][c1];
-				if (max < check)
-					max = check;
-
-				check = map[r2][c2];
-				if (max < check)
-					max = check;
-
-				int digit = 0;
-				while (max != 0)
-				{
-					digit++;
-					max /= 10;
-				}
-
-				for (int i = 0; i < y_len; i++)
-				{
-					for (int j = 0; j < x_len; j++)
-					{
-						printf("%*d ", digit, map[i][j]);
-					}
-					printf("\n");
-				}
-
-				return 0;
-			}
 #if 0
 		printf("\n");
 		for (int i = 4990; i < 5010; i++)
@@ -151,5 +117,43 @@ int main(void)
 		printf("\n");
 #endif
 	}
+	int max = 0;
+	int check = map[0][0];
+	if (max < check)
+		max = check;
+
+	check = map[0][x_len - 1];
+	if (max < check)
+		max = check;
+
+	check = map[y_len - 1][0];
+	if (max < check)
+		max = check;
+
+	check = map[y_len - 1][x_len - 1];
+	if (max < check)
+		max = check;
+
+	int digit = 0;
+	while (max != 0)
+	{
+		digit++;
+		max /= 10;
+	}
+
+	for (int i = 0; i < y_len; i++)
+	{
+		for (int j = 0; j < x_len; j++)
+		{
+			printf("%*d ", digit, map[i][j]);
+		}
+		printf("\n");
+	}
+
+	for (int i = 0; i < y_len; i++)
+	{
+		free(map[i]);
+	}
+	free(map);
 	return 0;
 }
