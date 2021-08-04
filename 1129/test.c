@@ -91,6 +91,38 @@ static void show_arr(int *arr, int cnt)
 	}
 	printf("\n");
 }
+
+static int retry_sort(int *result, int start, int end, int num_cnt, int max)
+{
+	if (start >= end)
+		return -1;
+
+	for (int i = end; i < (end + 1); i++)
+	{
+		int tmp = result[i];
+		memmove(&result[start + 1], &result[start], sizeof(int) * (i - start));
+		result[start] = tmp;
+
+		//printf("retry try %d %d\n", start, i);
+		//show_arr(result, num_cnt);
+		if (is_target_max(result, num_cnt, max) != 0)
+		{
+			//printf("%d fail\n", i - end);
+			if (retry_sort(result, start + 1, i, num_cnt, max) == 0)
+				return 0;
+			tmp = result[start];
+			memmove(&result[start], &result[start + 1], sizeof(int) * (i - start));
+			result[i] = tmp;
+			//printf("retry fail %d %d\n", start, i);
+			//show_arr(result, num_cnt);
+			continue;
+		}
+		return 0;
+	}
+
+	return -1;
+}
+
 //https://www.geeksforgeeks.org/minimize-the-maximum-absolute-difference-of-adjacent-elements-in-a-circular-array/
 int *t1(int *num, int num_cnt)
 {
@@ -135,13 +167,92 @@ int *t1(int *num, int num_cnt)
 		}
 	}
 
-#if 0
+#if 1
 	int max = get_max(result, num_cnt);
 	int cnt = num_cnt;
+
+	for (int i = 0; i < num_cnt; i++)
+	{
+		int min_idx = i;
+
+		for (int j = i + 1; j < num_cnt; j++)
+		{
+			if (result[min_idx] > result[j])
+			{
+				//memcpy(result, result, sizeof(result));
+#if 0
+				printf("cantch %d[%d] %d[%d] %d\n", min_idx, result[min_idx],
+					   j, result[j], max);
+				printf("before %d <-> %d move %d\n", min_idx, j, j - min_idx);
+				show_arr(result, num_cnt);
+#endif
+				int tmp = result[j];
+				memmove(&result[min_idx + 1], &result[min_idx],
+						sizeof(int) * (j - min_idx));
+				result[min_idx] = tmp;
+				//printf("after\n");
+				//show_arr(result, num_cnt);
+
+				if (is_target_max(result, num_cnt, max) != 0)
+				{
+					if (retry_sort(result, min_idx + 1, j, num_cnt, max) < 0)
+					{
+						//printf("no..\n");
+#if 1
+						tmp = result[min_idx];
+						memmove(&result[min_idx],
+								&result[min_idx + 1], sizeof(int) * (j - min_idx));
+						result[j] = tmp;
+#endif
+						//printf("restore\n");
+						//show_arr(result, num_cnt);
+					}
+					else
+					{
+						//printf("retry success\n");
+						//memcpy(result, result, sizeof(result));
+					}
+				} else
+				{
+					//printf("yes\n");
+				}
+
+				//min_idx = j;
+				//printf("min refresh %d[%d]\n", min_idx, result[min_idx]);
+			}
+		}
+
+#if 0
+		if (min_idx != i)
+		{
+			printf("cantch %d %d %d\n", min_idx, i, max);
+			printf("before %d <-> %d move %d\n", i, min_idx, min_idx - i);
+			show_arr(result, num_cnt);
+			int tmp = result[min_idx];
+			memmove(&result[i + 1], &result[i], sizeof(int) * (min_idx - i));
+			result[i] = tmp;
+			printf("after\n");
+			show_arr(result, num_cnt);
+
+			if (is_target_max(result, num_cnt, max) != 0)
+			{
+				printf("no..\n");
+				tmp = result[i];
+				memmove(&result[i], &result[i + 1], sizeof(int) * (min_idx - i));
+				result[min_idx] = tmp;
+				printf("restore\n");
+				show_arr(result, num_cnt);
+			} else
+			{
+				printf("yes\n");
+			}
+		}
+#endif
+	}
 	while (cnt--)
 	{
 		if (result[1] == result[num_cnt - 1] &&
-				is_target_max(result, num_cnt - 1, max) == 0)
+			is_target_max(result, num_cnt - 1, max) == 0)
 		{
 			memmove(&result[2], &result[1], (num_cnt - 2) * sizeof(int));
 			continue;
@@ -300,16 +411,20 @@ int main(void)
 
 	int test_cnt = 1000000;
 	srand(time(NULL));
+	int test_mcnt = 10;
 	while (test_cnt--)
 	{
-		int num_cnt = (uint32_t)(rand() % 10) + 2;
+		int num_cnt = (uint32_t)(rand() % test_mcnt) + 2;
 		int num[num_cnt];
 		for (int i = 0; i < num_cnt; i++)
 		{
-			num[i] = (uint32_t)(rand() % 10);
+			num[i] = (uint32_t)(rand() % test_mcnt);
 		}
+		//printf("num cnt %d\n", num_cnt);
 		int *r1 = t1(num, num_cnt);
+		//printf("t1 done\n");
 		int *r2 = t2(num, num_cnt);
+		//printf("t2 done\n");
 
 		for (int i = 0; i < num_cnt ;i++)
 		{
@@ -340,6 +455,7 @@ int main(void)
 		}
 		free(r1);
 		free(r2);
+		//printf("done %d\n", test_cnt);
 	}
 #endif
 	return 0;
